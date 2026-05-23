@@ -1,13 +1,58 @@
 #include <stdio.h>
+#include <string.h>
 #include "student.h"
 void addStudents();
 void displayStudents();
 void searchStudents();
 void deleteStudentByID();
 void updateStudentByID();
+
+// Password verification function
+int verifyAdminPassword()
+{
+    char password[50];
+    char correctPassword[] = "Kishan@123456";
+    int attempts = 3;
+
+    while (attempts > 0)
+    {
+        printf("\n========== Admin Login ==========\n");
+        printf("Enter Admin Password: ");
+        scanf("%s", password);
+
+        if (strcmp(password, correctPassword) == 0)
+        {
+            printf("Password correct! Access granted.\n");
+            printf("===================================\n");
+            return 1; // Login successful
+        }
+        else
+        {
+            attempts--;
+            if (attempts > 0)
+            {
+                printf("Incorrect password. %d attempts remaining.\n", attempts);
+            }
+            else
+            {
+                printf("Too many failed attempts. Access denied!\n");
+            }
+        }
+    }
+    return 0; // Login failed
+}
+
 int main()
 {
     int choice;
+
+    // Password verification before accessing the system
+    if (!verifyAdminPassword())
+    {
+        printf("System locked. Exiting...\n");
+        return 1;
+    }
+
     do
     {
         printf("\n-------------Student Management System-------------\n");
