@@ -58,7 +58,7 @@ int main()
         printf("\n-------------Student Management System-------------\n");
         printf("1. Add Student\n");
         printf("2. Display Students\n");
-        printf("3. Search Student\n");
+        printf("3. Search Student (by ID or Name)\n");
         printf("4. Delete Student\n");
         printf("5. Update Student\n");
         printf("6. Exit\n");

@@ -1,15 +1,10 @@
 #ifndef STUDENT_H
 #define STUDENT_H
+#define COURSE_COUNT 7
 typedef struct
 {
     int id;
-    int course1;
-    int course2;
-    int course3;
-    int course4;
-    int course5;
-    int course6;
-    int course7;
+    int courses[COURSE_COUNT];
     char name[50];
     float gpa;
     int semester;

@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "student.h"
+
+/* forward declaration so functions above can use it */
+static void toLowerCopy(const char *src, char *dst);
 
 FILE *openStudentFile(const char *mode)
 {
@@ -15,11 +19,42 @@ FILE *openStudentFile(const char *mode)
     return fp;
 }
 
-static float calculateGPA(int course1, int course2, int course3, int course4, int course5, int course6, int course7)
+static float calculateGPA(const int courses[], int count)
 {
-    float total = course1 + course2 + course3 + course4 + course5 + course6 + course7;
+    float total = 0;
+    for (int i = 0; i < count; i++)
+    {
+        total += courses[i];
+    }
     float average = total / 7.0f;
     return average / 10.0f; // Convert average marks (0-100) to GPA on a 10-point scale
+}
+
+static void printStudent(const Student *student)
+{
+    printf("ID: %d\n", student->id);
+    printf("Name: %s\n", student->name);
+    printf("Semester: %d\n", student->semester);
+    printf("Marks:");
+    for (int i = 0; i < COURSE_COUNT; i++)
+    {
+        printf(" %d", student->courses[i]);
+        if (i < COURSE_COUNT - 1)
+        {
+            printf(",");
+        }
+    }
+    printf("\n");
+    printf("GPA: %.2f\n", student->gpa);
+    for (int i = 0; i < COURSE_COUNT; i++)
+    {
+        if (student->courses[i] < 50)
+        {
+            printf("Status: Failed\n");
+            return;
+        }
+    }
+    printf("Status: Passed and congrats on being promoted to next semester!\n");
 }
 
 static int isDuplicateID(int id)
@@ -58,22 +93,13 @@ void addStudents()
     scanf("%s", student.name);
     printf("Enter Student Semester: ");
     scanf("%d", &student.semester);
-    printf("Enter Student Course 1: ");
-    scanf("%d", &student.course1);
-    printf("Enter Student Course 2: ");
-    scanf("%d", &student.course2);
-    printf("Enter Student Course 3: ");
-    scanf("%d", &student.course3);
-    printf("Enter Student Course 4: ");
-    scanf("%d", &student.course4);
-    printf("Enter Student Course 5: ");
-    scanf("%d", &student.course5);
-    printf("Enter Student Course 6: ");
-    scanf("%d", &student.course6);
-    printf("Enter Student Course 7: ");
-    scanf("%d", &student.course7);
+    for (int i = 0; i < COURSE_COUNT; i++)
+    {
+        printf("Enter Student Course %d: ", i + 1);
+        scanf("%d", &student.courses[i]);
+    }
 
-    student.gpa = calculateGPA(student.course1, student.course2, student.course3, student.course4, student.course5, student.course6, student.course7);
+    student.gpa = calculateGPA(student.courses, COURSE_COUNT);
 
     fwrite(&student, sizeof(Student), 1, fp);
     fclose(fp);
@@ -88,11 +114,7 @@ void displayStudents()
     printf("-------------Student Records-------------\n");
     while (fread(&student, sizeof(Student), 1, fp))
     {
-        printf("ID: %d\n", student.id);
-        printf("Name: %s\n", student.name);
-        printf("Semester: %d\n", student.semester);
-        printf("Marks: %d, %d, %d, %d, %d, %d, %d\n", student.course1, student.course2, student.course3, student.course4, student.course5, student.course6, student.course7);
-        printf("GPA: %.2f\n", student.gpa);
+        printStudent(&student);
         printf("---------------------------------------\n");
     }
     fclose(fp);
@@ -104,25 +126,61 @@ void searchStudents()
     FILE *fp = openStudentFile("rb");
     if (fp == NULL)
         return;
-    int id, found = 0;
-    printf("Enter ID to search: ");
-    scanf("%d", &id);
-    while (fread(&student, sizeof(Student), 1, fp))
+    int choice, id, found = 0;
+    char name[50];
+    printf("Search by: 1. ID  2. Name\n");
+    printf("Enter choice: ");
+    if (scanf("%d", &choice) != 1)
     {
-        if (student.id == id)
+        printf("Invalid input.\n");
+        fclose(fp);
+        return;
+    }
+
+    if (choice == 1)
+    {
+        printf("Enter ID to search: ");
+        scanf("%d", &id);
+        while (fread(&student, sizeof(Student), 1, fp))
         {
-            printf("ID: %d\n", student.id);
-            printf("Name: %s\n", student.name);
-            printf("Semester: %d\n", student.semester);
-            printf("Marks: %d, %d, %d, %d, %d, %d, %d\n", student.course1, student.course2, student.course3, student.course4, student.course5, student.course6, student.course7);
-            printf("GPA: %.2f\n", student.gpa);
-            found = 1;
-            break;
+            if (student.id == id)
+            {
+                printStudent(&student);
+                found = 1;
+                break;
+            }
+        }
+        if (!found)
+        {
+            printf("Student not found.\n");
         }
     }
-    if (!found)
+    else if (choice == 2)
     {
-        printf("Student not found.\n");
+        printf("Enter Name to search: ");
+        scanf("%s", name);
+        char lower_student[50];
+        char lower_name[50];
+        toLowerCopy(name, lower_name);
+        while (fread(&student, sizeof(Student), 1, fp))
+        {
+            toLowerCopy(student.name, lower_student);
+            if (strstr(lower_student, lower_name) != NULL)
+            {
+                printStudent(&student);
+                printf("---------------------------------------\n");
+                found = 1;
+                /* continue searching to find all matches */
+            }
+        }
+        if (!found)
+        {
+            printf("Student not found.\n");
+        }
+    }
+    else
+    {
+        printf("Invalid choice.\n");
     }
     fclose(fp);
 }
@@ -144,21 +202,12 @@ void updateStudentByID()
             scanf("%s", student.name);
             printf("Enter new semester: ");
             scanf("%d", &student.semester);
-            printf("Enter new marks for course 1: ");
-            scanf("%d", &student.course1);
-            printf("Enter new marks for course 2: ");
-            scanf("%d", &student.course2);
-            printf("Enter new marks for course 3: ");
-            scanf("%d", &student.course3);
-            printf("Enter new marks for course 4: ");
-            scanf("%d", &student.course4);
-            printf("Enter new marks for course 5: ");
-            scanf("%d", &student.course5);
-            printf("Enter new marks for course 6: ");
-            scanf("%d", &student.course6);
-            printf("Enter new marks for course 7: ");
-            scanf("%d", &student.course7);
-            student.gpa = calculateGPA(student.course1, student.course2, student.course3, student.course4, student.course5, student.course6, student.course7);
+            for (int i = 0; i < COURSE_COUNT; i++)
+            {
+                printf("Enter new marks for course %d: ", i + 1);
+                scanf("%d", &student.courses[i]);
+            }
+            student.gpa = calculateGPA(student.courses, COURSE_COUNT);
             fseek(fp, -sizeof(Student), SEEK_CUR);
             fwrite(&student, sizeof(Student), 1, fp);
             found = 1;
@@ -193,4 +242,14 @@ void deleteStudentByID()
     fclose(temp);
     remove("students.dat");
     rename("temp.dat", "students.dat");
+}
+
+static void toLowerCopy(const char *src, char *dst)
+{
+    int i;
+    for (i = 0; i < 50 && src[i] != '\0'; i++)
+    {
+        dst[i] = (char)tolower((unsigned char)src[i]);
+    }
+    dst[i] = '\0';
 }
