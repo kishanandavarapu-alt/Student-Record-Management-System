@@ -3,6 +3,10 @@
 A console-based application built in C using file handling concepts. Supports basic CRUD operations on student records with binary persistence and enhanced data management features.
 
 ## Features
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f512d0 (Updated readme again)
 - Add student records with ID, name, semester, and course marks
 - Display all stored student records with sort options
 - Search students by ID or name (case-insensitive)
@@ -23,8 +27,16 @@ A console-based application built in C using file handling concepts. Supports ba
 - CLI options: `--export`, `--search`
 
 ## Tech Stack
+<<<<<<< HEAD
 C, File Handling, Structs, Linked List, BST
 
 ## How to Run
+=======
+
+C, File Handling, Structs, Linked List, BST
+
+## How to Run
+
+>>>>>>> 5f512d0 (Updated readme again)
 gcc main.c fileops.c -o sms  
 ./sms
