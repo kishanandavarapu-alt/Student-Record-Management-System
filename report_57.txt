@@ -1,0 +1,15 @@
+Student Report Card
+===================
+ID: 57
+Name: Chingchang
+Semester: 4
+GPA: 7.53
+Marks:
+  Course 1: 67
+  Course 2: 98
+  Course 3: 76
+  Course 4: 58
+  Course 5: 68
+  Course 6: 95
+  Course 7: 65
+Status: Passed

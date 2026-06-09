@@ -1,0 +1,15 @@
+Student Report Card
+===================
+ID: 54
+Name: Chingchong
+Semester: 3
+GPA: 6.94
+Marks:
+  Course 1: 56
+  Course 2: 76
+  Course 3: 75
+  Course 4: 58
+  Course 5: 95
+  Course 6: 67
+  Course 7: 59
+Status: Passed

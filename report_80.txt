@@ -1,0 +1,15 @@
+Student Report Card
+===================
+ID: 80
+Name: kishan
+Semester: 4
+GPA: 8.50
+Marks:
+  Course 1: 89
+  Course 2: 90
+  Course 3: 89
+  Course 4: 87
+  Course 5: 97
+  Course 6: 65
+  Course 7: 78
+Status: Passed
